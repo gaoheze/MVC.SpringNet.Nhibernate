@@ -1,3 +1,6 @@
+using Spring.Context;
+using Spring.Context.Support;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +13,7 @@ namespace Nancal.Mvc.Demo
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        //public static IApplicationContext ctx =ContextRegistry.GetContext();
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Spring.Context.Support;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,8 +10,11 @@ namespace Nancal.Mvc.Demo.Controllers
 {
     public class HomeController : Controller
     {
+        private IDateWriter dateWriter = ContextRegistry.GetContext().GetObject<IDateWriter>("test2");
         public ActionResult Index()
         {
+            var data = dateWriter.Query();
+            var id = dateWriter.Save();
             return View();
         }
 

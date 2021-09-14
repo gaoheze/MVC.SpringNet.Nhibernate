@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns='http://www.springframework.net'
+         xmlns:db="http://www.springframework.net/database"
+         xmlns:tx="http://www.springframework.net/tx">
+	<!-- Referenced by main application context configuration file -->
+	<description>
+		The Northwind object definitions for the Data Access Objects.
+	</description>
+	<!-- Database Configuration -->
+	<!-- 引用web.config中的配置 -->
+	<object type="Spring.Objects.Factory.Config.PropertyPlaceholderConfigurer, Spring.Core">
+		<property name="ConfigSections" value="databaseSettings"/>
+	</object>
+	<!-- NHibernate SessionFactory configuration -->
+	<object id="SessionFactory" type="Nancal.Mvc.Demo.LocalSessionFactory, Nancal.Mvc.Demo">
+		<property name="ModelAssemblyName">
+			<list>
+				<value>Nancal.Mvc.Demo</value>
+			</list>
+		</property>
+		<property name="HibernateProperties">
+			<dictionary>
+				<entry key="dialect" value="NHibernate.Dialect.MsSql2012Dialect"/>
+				<entry key="connection.connection_string" value="Persist Security Info=False;User ID=${mssql.user};Password=${mssql.password};Initial Catalog=${mssql.database};Server=${mssql.host}"/>
+				<!--<entry key="dialect" value="NHibernate.Dialect.Oracle12cDialect"/>-->
+				<!--<entry key="connection.driver_class" value="NHibernate.Driver.OracleManagedDataClientDriver"/>-->
+				<!--<entry key="connection.connection_string" value="Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=${oracle.host})(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=${oracle.service_name})));Persist Security Info=True;User ID=${oracle.user};Password=${oracle.password};"/>-->
+				<entry key="use_proxy_validator" value="false" />
+				<entry key="cache.use_query_cache" value="true"/>
+				<entry key="cache.use_second_level_cache" value="true"/>
+				<entry key="cache.provider_class" value="NHibernate.Cache.HashtableCacheProvider" />
+				<entry key="show_sql" value="true"/>
+				<entry key="format_sql" value="true"/>
+				<entry key="default_flush_mode" value ="Commit"/>
+			</dictionary>
+		</property>
+		 <!--provides integation with Spring's declarative transaction management features--> 
+		<property name="ExposeTransactionAwareSessionFactory" value="true" />
+	</object>
+	<!-- Transaction Management Strategy - local database transactions -->
+	<object id="transactionManager" type="Spring.Data.NHibernate.HibernateTransactionManager, Spring.Data.NHibernate5">
+		<!--  Comment out DbProvider if you want to have the tx mgr infer the DbProvider from
+              the session factory.  -->
+		<!--  Set the DbProvider explicitly if you would like to have ADO.NET and NHibernate
+              operations take place within the same transaction.  -->
+		<!-- <property name="DbProvider" ref="DbProvider"/>-->
+		<property name="SessionFactory" ref="SessionFactory"/>
+	</object>
+	<!-- Exception translation object post processor -->
+	<!--<object type="Spring.Dao.Attributes.PersistenceExceptionTranslationPostProcessor, Spring.Data"/>-->
+	<!-- Data Access Objects -->
+	<object id="dao" type="Nancal.Mvc.Demo.BaseDao,Nancal.Mvc.Demo" scope="request">
+		<property name="SessionFactory" ref="SessionFactory"/>
+	</object>
+	<!--<tx:attribute-driven/>-->
+	<tx:attribute-driven transaction-manager="transactionManager"/>
+</objects>
